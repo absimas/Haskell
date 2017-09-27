@@ -1,6 +1,4 @@
-import Data.Char (digitToInt)
 import Test.QuickCheck
-import Data.List
 
 -- Task 1
 nAnd :: Bool -> Bool -> Bool
@@ -9,23 +7,22 @@ nAnd x y = not(x && y)
 nAnd2 True x = not(x)
 nAnd2 False x = True
 
+nAnd3 :: Bool -> Bool -> Bool
+nAnd3 False False = True
+nAnd3 False True = True
+nAnd3 True False = True
+nAnd3 True True = False
+
 -- Task 2
 prop_nAnds :: Bool -> Bool -> Bool
-prop_nAnds x y = nAnd x y == nAnd2 x y
+prop_nAnds x y = nAnd x y == nAnd2 x y && nAnd x y == nAnd3 x y
 
 prop_nAnds2 :: Bool -> Bool -> Bool
-prop_nAnds2 x y = (nAnd False y ==  nAnd x False) == True
+prop_nAnds2 x y = nAnd False y == True && nAnd x False == True
 
 -- Task 3
--- Function to convert Integer to a list containing all digits
-toList :: Integer -> [Integer]
-toList = map(fromIntegral.digitToInt).show
-
--- Count digits in an integer (ignores minus sign)
 nDigits :: Integer -> Int
-nDigits n
-  | n < 0 = genericLength(toList(n))-1
-  | otherwise = genericLength(toList(n))
+nDigits n = length(show(abs(n)))
 
 -- Task 4
 nRoots :: Float -> Float -> Float -> Int
@@ -39,7 +36,7 @@ nRoots a b c
 signedRoot :: Int -> Float -> Float -> Float -> Float
 signedRoot s a b c
   | nRoots a b c == 0 = error "No roots!"
-  | first >= second && s > 0 || first < second && s < 0 = first -- daijoubou ka?
+  | first >= second && s > 0 || first < second && s < 0 = first
   | otherwise = second
   where
     root = sqrt(b^2 - 4 * a * c) :: Float
@@ -71,7 +68,7 @@ prod :: Integer -> Integer -> Integer
 prod m n
   | m > n = error "Invalid range."
   | m - n == 0 = n
-  | otherwise = n * prod m (n - 1)
+  | otherwise = m * prod (m + 1) n
 
 fac :: Integer -> Integer
 fac n
