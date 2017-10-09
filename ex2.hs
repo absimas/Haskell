@@ -7,7 +7,9 @@ average floats = sum floats / size
 
 -- Task 2
 divides :: Int -> [Int]
-divides n = divisors n 1 []
+divides n
+  | n < 0 = divides (-n)
+  | otherwise = divisors n 1 []
 
 divisors :: Int -> Int -> [Int] -> [Int]
 divisors x y list
