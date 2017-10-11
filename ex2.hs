@@ -18,7 +18,7 @@ divisors x y list
   | otherwise = divisors x (y+1) list
 
 divides2 :: Int -> [Int]
-divides2 n = [x | x <- [1..n], n `mod` x == 0]
+divides2 n = [x | x <- [1..n `div` 2], n `mod` x == 0] ++ [n]
 
 is_prime :: Int -> Bool
 is_prime n
@@ -29,11 +29,16 @@ is_prime n
 prefix :: String -> String -> Bool
 prefix a b = a == take (length a) b
 
+prefix2 :: String -> String -> Bool
+prefix2 [] _ = True
+prefix2 _ [] = False
+prefix2 (x:xs) (y:ys) = (x == y) && prefix2 xs ys
+
 -- Check if a is part of b
 substring :: String -> String -> Bool
+substring _ [] = False
 substring a b
   | prefix a b == True = True
-  | null b = False
   | otherwise = substring a (tail b)
 
 -- Task 4
@@ -44,12 +49,10 @@ delete x (y:ys)
   | otherwise = y:delete x ys
 
 permut :: [Integer] -> [Integer] -> Bool
-permut a b
-  | length a /= length b = False
-  | length a > 0 && elem removal b = permut (tail a) (delete removal b)
-  | otherwise = length a == 0
-  where
-    removal = head a
+permut [] [] = True
+permut _ [] = False
+permut [] _ = False
+permut (x:xs) b = elem x b && permut xs (delete x b)
 
 -- Task 5
 isAlphabet :: Char -> Bool
@@ -78,8 +81,7 @@ itemTotal (x:xs) = add x (itemTotal xs)
 
 itemDiscount :: String -> Integer -> [(String, Float)] -> [(String, Float)]
 itemDiscount _ _ [] = []
-itemDiscount name discount [x]
+itemDiscount name discount (x:xs)
   | discount < 0 || discount > 100 = error "Discount should be specified in % ([0..100])!"
-  | name == fst x = [(name, snd x * (100 - fromIntegral(discount)) / 100)]
-  | otherwise = [x]
-itemDiscount name discount (x:xs) = itemDiscount name discount [x] ++ itemDiscount name discount xs
+  | name == fst x = (name, snd x * (100 - fromIntegral(discount)) / 100) : itemDiscount name discount xs
+  | otherwise = x : itemDiscount name discount xs
