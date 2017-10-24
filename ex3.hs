@@ -1,5 +1,7 @@
 import Data.Char
 import Data.List
+import Data.List.Split
+import Data.Maybe
 
 subst :: String -> String -> String -> String
 subst _ _ [] = []
@@ -27,17 +29,37 @@ isPalin string
 -- Task 3
 count :: String -> (Int, Int, Int)
 count [] = (0,0,0)
-count (x:xs) -- ToDo doesn't work for "abc" - should have 1 word
-  | x == ' ' && (length xs == 0 || head xs == ' ') = sumTuple (1, 0, 0) (count xs)
-  | x == ' ' = sumTuple (1, 1, 0) (count xs)
-  | x == '\n' = sumTuple (1, 0, 1) (count xs)
-  | otherwise = sumTuple (1, 0, 0) (count xs)
+count st = (chars, words, lines)
   where
-    sumTuple (a,b,c) (d,e,f) = (a+d, b+e, c+f)
+    chars = length st
+    words = length (splitOn " " st)
+    lines = length (splitOn "\n" st)
 
-nOccurs ::  [Integer] -> [(Integer,Int)]
-nOccurs [] = []
-nOccurs (x:xs) = (x, length onlyX + 1) : (nOccurs withoutX)
+-- Following doesn't work for "abc" - should have 1 word and 1 line
+-- count (x:xs)
+--   | x == ' ' && (length xs == 0 || head xs == ' ') = sumTuple (1, 0, 0) (count xs)
+--   | x == ' ' = sumTuple (1, 1, 0) (count xs)
+--   | x == '\n' = sumTuple (1, 0, 1) (count xs)
+--   | otherwise = sumTuple (1, 0, 0) (count xs)
+--   where
+--     sumTuple (a,b,c) (d,e,f) = (a+d, b+e, c+f)
+
+-- Task 4
+justify :: String -> Int -> String
+justify [] _ = []
+justify st i
+  | i >= length st = st
+  | otherwise = fst split ++ "\n" ++ justify (snd split) i
   where
-    onlyX = [xx | xx <- xs, xx == x]
-    withoutX = [xx | xx <- xs, xx /= x]
+    preSpaceIndex = findBackwards ' ' st i
+    split = splitAt (preSpaceIndex+1) st
+
+-- findBackwards criteria string startIndex
+-- finds 'criteria' within 'string' starting from 'startIndex' (inclusive)
+findBackwards :: Char -> String -> Int -> Int
+findBackwards _ [] _ = error "Given string is empty!"
+findBackwards c st i
+  | i >= length st = error "Given index is OOB!"
+  | i < 0 = error "Space not found in string ? starting at index ?"
+  | c == (st !! i) = i
+  | otherwise = findBackwards c st (i-1)
