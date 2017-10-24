@@ -103,3 +103,41 @@ overlaps (Circle r (Point x0 y0)) (Rectangle h w (Point x1 y1))
     distY = abs (y0 - y1 - h/2)
     dx = distX - w/2
     dy = distY - h/2
+
+-- Task 6
+data Status = Loaned | Free | Locked
+  deriving (Show, Ord, Eq)
+
+data Book = Book { name :: String, bookId :: Int, status :: Status }
+  deriving (Show, Ord, Eq)
+
+data Person = Person { firstName :: String, loans :: [Book] }
+  deriving (Show, Ord, Eq)
+
+-- Compare by name and id only?
+-- instance Eq Book
+--   where
+--     (Book name0 id0 _) == (Book name1 id1 _) = name0 == name1 && id0 == id1
+-- instance Eq Person
+--   where
+--     (Person firstName0 _) == (Person firstName1 _) = firstName0 == firstName1
+
+books = [(Book "book1" 0 Free), (Book "book1" 1 Loaned), (Book "book3" 2 Locked), (Book "book4" 3 Free)]
+persons = [Person "person1" [], Person "person2" []]
+
+loan :: Person -> Book -> ([Book], [Person]) -> ([Book], [Person])
+loan person book (books,people)
+  | personIndex == Nothing = error "Person is not in the database!"
+  | bookIndex == Nothing = error "Book is not in the database!"
+  | bookStatus == Locked || bookStatus == Loaned = (books, people)
+  | otherwise = (modifiedBooks, modifiedPeople)
+  where
+    personIndex = elemIndex person people
+    bookIndex = elemIndex book books
+    bookStatus = status book
+    bookSplit = splitAt ((fromJust bookIndex)+1) books
+    peopleSplit = splitAt ((fromJust personIndex)+1) people
+    modifiedBook = Book (name book) (bookId book) Loaned
+    modifiedPerson = Person (firstName person) (modifiedBook : (loans person))
+    modifiedBooks = (init (fst bookSplit)) ++ [modifiedBook] ++ snd bookSplit
+    modifiedPeople = (init (fst peopleSplit)) ++ [modifiedPerson] ++ snd peopleSplit
