@@ -63,3 +63,38 @@ findBackwards c st i
   | i < 0 = error "Space not found in string ? starting at index ?"
   | c == (st !! i) = i
   | otherwise = findBackwards c st (i-1)
+
+-- Task 5
+data Point = Point Float Float
+  deriving (Show, Ord, Eq)
+
+distance :: Point -> Point -> Float
+distance (Point x1 y1) (Point x2 y2) = sqrt ((x2 - x1)^2 + (y2 - y1)^2)
+
+data Line = Line Point Point
+  deriving (Show, Ord, Eq)
+
+data Shape = Circle Float Point | Rectangle Float Float Point
+  deriving (Show, Ord, Eq)
+
+-- Check if first point is between the other 2
+intersects :: Point -> Point -> Point -> Bool
+intersects p1 p2 p3 = (distance p1 p2) + (distance p1 p3) == (distance p2 p3)
+
+-- Circle within circle
+overlaps :: Shape -> Shape -> Bool
+overlaps (Circle r0 p0) (Circle r1 p1) = dp <= dr
+  where
+    dp = distance p0 p1
+    dr = r0 + r1
+-- Rect within rect
+overlaps (Rectangle h0 w0 (Point x0 y0)) (Rectangle h1 w1 (Point x1 y1)) = x0+w0 >= x1 && x1+w1 >= x0 && y0+h0 >= y1 || y1+h1 >= y0
+
+-- Rect within circle / circle within rect
+overlaps (Rectangle h w p0) (Circle r p1) = overlaps (Circle r p1) (Rectangle h w p0)
+overlaps (Circle r (Point x0 y0)) (Rectangle h w (Point x1 y1))
+  | distX > (w/2 + r) || distY > (h/2 + r) = False
+  | otherwise = True
+  where
+    distX = abs ((x0) - ((x1) - (w/2)))
+    distY = abs ((y0) - ((y1) - (h/2)))
