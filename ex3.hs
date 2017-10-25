@@ -3,6 +3,7 @@ import Data.List
 import Data.List.Split
 import Data.Maybe
 
+-- Task 1
 subst :: String -> String -> String -> String
 subst _ _ [] = []
 subst [] _ st = st
@@ -12,19 +13,20 @@ subst oldSub newSub (x:xs)
   where
     oldSubRemoved = drop (length oldSub) (x:xs)
 
+punctuation = " \t.,;-:"
+
 -- Task 2
 isPalin :: String -> Bool
-isPalin [] = True
-isPalin string
-  | notLetter first = isPalin (tail string)
-  | notLetter last = isPalin (init string)
-  | length string == 1 = False
-  | first == last  = isPalin (tail (init string))
-  | otherwise = False
+isPalin st = isPalin' [toUpper x | x <- st, not (elem x punctuation)]
   where
-    first = toUpper (head string)
-    last = toUpper (string !! (length string - 1))
-    notLetter x = not (isLetter x)
+    isPalin' [] = True
+    isPalin' string
+      | length string == 1 = False
+      | first == last  = isPalin (tail (init string))
+      | otherwise = False
+      where
+        first = head string
+        last = string !! (length string - 1)
 
 -- Task 3
 count :: String -> (Int, Int, Int)
