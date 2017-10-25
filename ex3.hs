@@ -29,22 +29,14 @@ isPalin st = isPalin' [toUpper x | x <- st, not (elem x punctuation)]
         last = string !! (length string - 1)
 
 -- Task 3
+-- splitBy - splits string (2nd arg) by any of the given chars (1st arg)
 count :: String -> (Int, Int, Int)
 count [] = (0,0,0)
 count st = (chars, words, lines)
   where
     chars = length st
-    words = length (splitOn " " st)
+    words = length (splitOneOf punctuation st)
     lines = length (splitOn "\n" st)
-
--- Following doesn't work for "abc" - should have 1 word and 1 line
--- count (x:xs)
---   | x == ' ' && (length xs == 0 || head xs == ' ') = sumTuple (1, 0, 0) (count xs)
---   | x == ' ' = sumTuple (1, 1, 0) (count xs)
---   | x == '\n' = sumTuple (1, 0, 1) (count xs)
---   | otherwise = sumTuple (1, 0, 0) (count xs)
---   where
---     sumTuple (a,b,c) (d,e,f) = (a+d, b+e, c+f)
 
 -- Task 4
 justify :: String -> Int -> String
