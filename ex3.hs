@@ -45,18 +45,18 @@ justify st i
   | i >= length st = st
   | otherwise = fst split ++ "\n" ++ justify (snd split) i
   where
-    preSpaceIndex = findBackwards ' ' st i
+    preSpaceIndex = findBackwards punctuation st i
     split = splitAt (preSpaceIndex+1) st
 
 -- findBackwards criteria string startIndex
--- finds 'criteria' within 'string' starting from 'startIndex' (inclusive)
-findBackwards :: Char -> String -> Int -> Int
+-- finds any char from 'criteria' within 'string' starting from 'startIndex' (inclusive)
+findBackwards :: String -> String -> Int -> Int
 findBackwards _ [] _ = error "Given string is empty!"
-findBackwards c st i
+findBackwards criteria st i
   | i >= length st = error "Given index is OOB!"
-  | i < 0 = error "Space not found in string ? starting at index ?"
-  | c == (st !! i) = i
-  | otherwise = findBackwards c st (i-1)
+  | i < 0 = error "Punctuation not found!"
+  | elem (st !! i) criteria = i
+  | otherwise = findBackwards criteria st (i-1)
 
 -- Task 5
 data Point = Point Float Float
