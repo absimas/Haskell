@@ -84,7 +84,6 @@ overlaps (Circle r0 p0) (Circle r1 p1) = dp <= dr
 
 -- Rect overlaps rect
 overlaps (Rectangle h0 w0 (Point x0 y0)) (Rectangle h1 w1 (Point x1 y1)) = x0 < x1+w1 && x0+w0 > x1 && y0+h0 > y1 && y0 < y1+h1
--- x0+w0 >= x1 && x1+w1 >= x0 && y0+h0 >= y1 || y1+h1 >= y0
 
 -- Rect overlaps circle
 overlaps (Rectangle h w p0) (Circle r p1) = overlaps (Circle r p1) (Rectangle h w p0)
@@ -102,36 +101,35 @@ overlaps (Circle r (Point x0 y0)) (Rectangle h w (Point x1 y1))
 data Status = Loaned | Free | Locked
   deriving (Show, Ord, Eq)
 
-data Book = Book { name :: String, bookId :: Int, status :: Status }
+type Book = String
+type Person = String
+
+data BookEntity = BookEntity { name :: String, bookId :: Int, status :: Status }
   deriving (Show, Ord, Eq)
 
-data Person = Person { firstName :: String, loans :: [Book] }
+data PersonEntity = PersonEntity { firstName :: String, loans :: [BookEntity] }
   deriving (Show, Ord, Eq)
 
--- Compare by name and id only?
--- instance Eq Book
---   where
---     (Book name0 id0 _) == (Book name1 id1 _) = name0 == name1 && id0 == id1
--- instance Eq Person
---   where
---     (Person firstName0 _) == (Person firstName1 _) = firstName0 == firstName1
+books = [(BookEntity "book1" 0 Free), (BookEntity "book1" 1 Loaned), (BookEntity "book3" 2 Locked), (BookEntity "book4" 3 Free)]
+people = [PersonEntity "person1" [], PersonEntity "person2" []]
 
-books = [(Book "book1" 0 Free), (Book "book1" 1 Loaned), (Book "book3" 2 Locked), (Book "book4" 3 Free)]
-persons = [Person "person1" [], Person "person2" []]
-
-loan :: Person -> Book -> ([Book], [Person]) -> ([Book], [Person])
-loan person book (books,people)
-  | personIndex == Nothing = error "Person is not in the database!"
-  | bookIndex == Nothing = error "Book is not in the database!"
-  | bookStatus == Locked || bookStatus == Loaned = (books, people)
-  | otherwise = (modifiedBooks, modifiedPeople)
+loan :: Person -> Book -> ([PersonEntity], [BookEntity]) -> ([PersonEntity], [BookEntity])
+loan personName bookName (people, books)
+  | personEntity == Nothing = error "Person is not in the database!"
+  | null bookEntities = error "Book is not in the database!"
+  | bookEntity == Nothing = (people, books)
+  | otherwise = (modifiedPeople, modifiedBooks)
   where
-    personIndex = elemIndex person people
-    bookIndex = elemIndex book books
-    bookStatus = status book
+    personEntity = find (\p -> firstName p == personName) people
+    personEntity' = fromJust personEntity
+    bookEntities = [b | b <- books, name b == bookName]
+    bookEntity = find (\b -> status b == Free) bookEntities
+    bookEntity' = fromJust bookEntity
+    bookIndex = elemIndex bookEntity' books
+    personIndex = elemIndex personEntity' people
     bookSplit = splitAt ((fromJust bookIndex)+1) books
     peopleSplit = splitAt ((fromJust personIndex)+1) people
-    modifiedBook = Book (name book) (bookId book) Loaned
-    modifiedPerson = Person (firstName person) (modifiedBook : (loans person))
+    modifiedBook = BookEntity (name bookEntity') (bookId bookEntity') Loaned
+    modifiedPerson = PersonEntity (firstName personEntity') (modifiedBook : (loans personEntity'))
     modifiedBooks = (init (fst bookSplit)) ++ [modifiedBook] ++ snd bookSplit
     modifiedPeople = (init (fst peopleSplit)) ++ [modifiedPerson] ++ snd peopleSplit
