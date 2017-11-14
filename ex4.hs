@@ -14,3 +14,7 @@ all2 :: (a->Bool) -> [a] -> Bool
 
 any2 cond arr = foldr (\x n -> n || cond x) False arr
 all2 cond arr = foldr (\x n -> n && cond x) True arr
+
+-- Exercise 3
+unzip :: [(a,b)] -> ([a],[b])
+unzip arr = foldr (\pair lists -> (fst pair : fst lists, snd pair : snd lists)) ([], []) arr
