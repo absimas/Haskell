@@ -18,3 +18,13 @@ all2 cond arr = foldr (\x n -> n && cond x) True arr
 -- Exercise 3
 unzip :: [(a,b)] -> ([a],[b])
 unzip arr = foldr (\pair lists -> (fst pair : fst lists, snd pair : snd lists)) ([], []) arr
+
+-- Exercise 4
+ff :: Integer -> [Integer] -> Integer
+ff bound = foldr sum 0 . map multiply . filter notNegative
+  where
+    notNegative x = x >= 0
+    multiply x = x * 10
+    sum elem current
+      | elem + current >= bound = bound
+      | otherwise = elem + current
