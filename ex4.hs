@@ -37,3 +37,12 @@ flip f x y = f y x
 total :: (Integer -> Integer) -> (Integer -> Integer)
 total f g = foldr (\x n -> n + f x) 0 [0..g]
 
+-- Exercise 7
+iter1 :: Integer -> (a->a) -> (a->a)
+iter1 n f
+  | n <= 0 = id
+  | otherwise = f . (iter1 (n-1) f)
+
+iter2 :: Int -> (a->a) -> (a->a)
+iter2 n f = foldr (\x n -> x . n) id (replicate n f)
+
