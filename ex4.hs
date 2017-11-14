@@ -28,3 +28,9 @@ ff bound = foldr sum 0 . map multiply . filter notNegative
     sum elem current
       | elem + current >= bound = bound
       | otherwise = elem + current
+
+-- Exercise 5
+flip :: (a->b->c) -> (b->a->c)
+flip f x y = f y x
+
+
