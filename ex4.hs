@@ -46,3 +46,6 @@ iter1 n f
 iter2 :: Int -> (a->a) -> (a->a)
 iter2 n f = foldr (\x n -> x . n) id (replicate n f)
 
+-- Exercise 8
+splits :: [a] -> [([a], [a])]
+splits arr = foldr (\x n -> n ++ [splitAt (length n+1) arr]) [([], arr)] arr
