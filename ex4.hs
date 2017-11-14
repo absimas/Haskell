@@ -1,3 +1,16 @@
 -- Exercise 1
-map_length = sum . map (\_->1)
+map_length = sum . map (\_-> 1)
 foldr_length arr = foldr (\_ n -> 1+n) 0 arr
+
+-- Exercise 2
+any1 :: (a->Bool) -> [a] -> Bool
+all1 :: (a->Bool) -> [a] -> Bool
+
+any1 cond arr = (length $ filter cond arr) >  0
+all1 cond arr = (length $ filter cond arr) == length arr
+
+any2 :: (a->Bool) -> [a] -> Bool
+all2 :: (a->Bool) -> [a] -> Bool
+
+any2 cond arr = foldr (\x n -> n || cond x) False arr
+all2 cond arr = foldr (\x n -> n && cond x) True arr
