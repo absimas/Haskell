@@ -31,7 +31,7 @@ ff bound = foldr sum 0 . map multiply . filter notNegative
 
 -- Exercise 5
 flip :: (a->b->c) -> (b->a->c)
-flip f x y = f y x
+flip f = (\x y -> f y x)
 
 -- Exercise 6
 total :: (Integer -> Integer) -> (Integer -> Integer)
